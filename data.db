@@ -1,12 +1,5 @@
 [
     {
-        "name": "Harry Potter and the Philosopher's stone",
-        "publication_date": "1999",
-        "author": "J.K. Rowling",
-        "category": "fiction",
-        "borrowed": true
-    },
-    {
         "name": "The Silent Patient",
         "publication_date": "2019",
         "author": "Alex Michaelides",
@@ -14,30 +7,23 @@
         "borrowed": false
     },
     {
-        "name": "The Alchemist",
-        "publication_date": "1988",
-        "author": "Paul Coelho",
-        "category": "Fiction",
-        "borrowed": true
-    },
-    {
-        "name": "1776",
-        "publication_date": "2005",
-        "author": "David McCullough",
-        "category": "History",
-        "borrowed": false
-    },
-    {
-        "name": "Book",
-        "publication_date": "2025",
-        "author": "Omar",
-        "category": "Science",
-        "borrowed": false
-    },
-    {
         "name": "Test Book",
         "publication_date": "2023",
         "author": "Test Author",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "book",
+        "publication_date": "2025",
+        "author": "Omar",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "Harry Potter and the Philosopher's stone",
+        "publication_date": "1999",
+        "author": "J.K. Rowling",
         "category": "Fiction",
         "borrowed": false
     }

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 import json
 import os
@@ -21,9 +21,15 @@ def save_books(books):
 @app.route('/books', methods=['GET'])
 def get_books():
     books = load_books()
-    books = [b for b in books if not b['borrowed']]  # Only available media
+    for i, book in enumerate(books):
+        book['id'] = i
+    borrowed_filter = request.args.get('borrowed')
     category = request.args.get('category')
     name = request.args.get('name')
+    if borrowed_filter == 'available':
+        books = [b for b in books if not b['borrowed']]
+    elif borrowed_filter == 'borrowed':
+        books = [b for b in books if b['borrowed']]
     if category:
         books = [b for b in books if b['category'].lower() == category.lower()]
     if name:
@@ -40,13 +46,16 @@ def get_book(book_id):
 @app.route('/books', methods=['POST'])
 def create_book():
     books = load_books()
-    data = request.get_json()
+    data = request.get_json() if request.is_json else request.form.to_dict()
     if not all(k in data for k in ('name', 'publication_date', 'author', 'category')):
         return jsonify({'error': 'Missing fields'}), 400
     data['borrowed'] = False
     books.append(data)
     save_books(books)
-    return jsonify(data), 201
+    if request.is_json:
+        return jsonify(data), 201
+    else:
+        return redirect('/')
 
 @app.route('/books/<int:book_id>', methods=['DELETE'])
 def delete_book(book_id):
@@ -79,26 +88,47 @@ def return_book(book_id):
         return jsonify(books[book_id])
     return jsonify({'error': 'Book not found'}), 404
 
+@app.route('/web/borrow/<int:book_id>', methods=['POST'])
+def web_borrow_book(book_id):
+    borrow_book(book_id)
+    return redirect('/')
+
+@app.route('/web/return/<int:book_id>', methods=['POST'])
+def web_return_book(book_id):
+    return_book(book_id)
+    return redirect('/')
+
+@app.route('/web/delete/<int:book_id>', methods=['POST'])
+def web_delete_book(book_id):
+    books = load_books()
+    if 0 <= book_id < len(books):
+        books.pop(book_id)
+        save_books(books)
+    return redirect('/')
+
 @app.route('/')
 def index():
     books = load_books()
     borrowed_filter = request.args.get('borrowed')
     name_search = request.args.get('name')
-    if borrowed_filter == 'available':
-        books = [b for b in books if not b['borrowed']]
-    elif borrowed_filter == 'borrowed':
-        books = [b for b in books if b['borrowed']]
-    if name_search:
-        books = [b for b in books if b['name'].lower() == name_search.lower()]
+    filtered_books = []
+    for idx, book in enumerate(books):
+        if borrowed_filter == 'available' and book['borrowed']:
+            continue
+        elif borrowed_filter == 'borrowed' and not book['borrowed']:
+            continue
+        if name_search and book['name'].lower() != name_search.lower():
+            continue
+        filtered_books.append((idx, book))
     table_rows = ""
-    for i, book in enumerate(books):
+    for idx, book in filtered_books:
         status = "Borrowed" if book['borrowed'] else "Available"
         actions = ""
         if not book['borrowed']:
-            actions += f'<form method="post" action="/web/borrow/{i}" style="display:inline;"><button type="submit">Borrow</button></form>'
+            actions += f'<form method="post" action="/web/borrow/{idx}" style="display:inline;"><button type="submit">Borrow</button></form>'
         else:
-            actions += f'<form method="post" action="/web/return/{i}" style="display:inline;"><button type="submit">Return</button></form>'
-        actions += f'<form method="post" action="/web/delete/{i}" style="display:inline;"><button type="submit">Delete</button></form>'
+            actions += f'<form method="post" action="/web/return/{idx}" style="display:inline;"><button type="submit">Return</button></form>'
+        actions += f'<form method="post" action="/web/delete/{idx}" style="display:inline;"><button type="submit">Delete</button></form>'
         table_rows += f"""
         <tr>
             <td>{book['name']}</td>

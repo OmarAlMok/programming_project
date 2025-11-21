@@ -76,8 +76,8 @@ class MainWindow(QMainWindow):
 
         # Table widget
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(4)
-        self.table_widget.setHorizontalHeaderLabels(["Name", "Author", "Publication Date", "Category"])
+        self.table_widget.setColumnCount(5)
+        self.table_widget.setHorizontalHeaderLabels(["Name", "Author", "Publication Date", "Category", "Status"])
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         # Buttons
@@ -98,6 +98,7 @@ class MainWindow(QMainWindow):
         # Connect signals
         self.search_btn.clicked.connect(self.search)
         self.category_combo.currentTextChanged.connect(self.filter_category)
+        self.borrowed_combo.currentTextChanged.connect(self.filter_borrowed)
         self.refresh_btn.clicked.connect(self.load_books)
         self.add_btn.clicked.connect(self.add_book)
         self.delete_btn.clicked.connect(self.delete_book)
@@ -118,6 +119,8 @@ class MainWindow(QMainWindow):
                     self.table_widget.setItem(i, 1, QTableWidgetItem(book['author']))
                     self.table_widget.setItem(i, 2, QTableWidgetItem(book['publication_date']))
                     self.table_widget.setItem(i, 3, QTableWidgetItem(book['category']))
+                    status = "Borrowed" if book['borrowed'] else "Available"
+                    self.table_widget.setItem(i, 4, QTableWidgetItem(status))
         except requests.exceptions.RequestException:
             QMessageBox.warning(self, "Error", "Cannot connect to backend.")
 
@@ -155,6 +158,8 @@ class MainWindow(QMainWindow):
                     self.table_widget.setItem(i, 1, QTableWidgetItem(book['author']))
                     self.table_widget.setItem(i, 2, QTableWidgetItem(book['publication_date']))
                     self.table_widget.setItem(i, 3, QTableWidgetItem(book['category']))
+                    status = "Borrowed" if book['borrowed'] else "Available"
+                    self.table_widget.setItem(i, 4, QTableWidgetItem(status))
         except requests.exceptions.RequestException:
             QMessageBox.warning(self, "Error", "Cannot connect to backend.")
 

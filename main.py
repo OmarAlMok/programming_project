@@ -25,7 +25,8 @@ if __name__ == '__main__':
     qt_app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(qt_app.exec())
+    exit_code = qt_app.exec()
 
     # Terminate server when GUI closes
     server_process.terminate()
+    sys.exit(exit_code)
