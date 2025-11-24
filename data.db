@@ -7,23 +7,58 @@
         "borrowed": false
     },
     {
-        "name": "Test Book",
-        "publication_date": "2023",
-        "author": "Test Author",
-        "category": "Fiction",
-        "borrowed": false
-    },
-    {
-        "name": "book",
-        "publication_date": "2025",
-        "author": "Omar",
-        "category": "Fiction",
-        "borrowed": false
-    },
-    {
         "name": "Harry Potter and the Philosopher's stone",
         "publication_date": "1999",
         "author": "J.K. Rowling",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "The Boy Who Lost His Face",
+        "publication_date": "1989",
+        "author": "Louis Sachar",
+        "category": "Fiction",
+        "borrowed": true
+    },
+    {
+        "name": "The Mind Illuminated",
+        "publication_date": "2015",
+        "author": "Culadasa",
+        "category": "Science",
+        "borrowed": false
+    },
+    {
+        "name": "Magnus Chase and the Sword of Summer",
+        "publication_date": "2015",
+        "author": "Rick Riordan",
+        "category": "Fiction",
+        "borrowed": true
+    },
+    {
+        "name": "Ego is the Enemy",
+        "publication_date": "2016",
+        "author": "Rian Holiday",
+        "category": "Philosophy",
+        "borrowed": false
+    },
+    {
+        "name": "Scythe",
+        "publication_date": "2016",
+        "author": "Neal Shusterman",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "A Thousand Splendid Suns",
+        "publication_date": "2007",
+        "author": "Khaled Hosseini",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "The Kite Runner",
+        "publication_date": "2003",
+        "author": "Khaled Hosseini",
         "category": "Fiction",
         "borrowed": false
     }

@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.category_combo.addItem("Non-Fiction")
         self.category_combo.addItem("Science")
         self.category_combo.addItem("History")
+        self.category_combo.addItem("Philosophy")
         self.borrowed_combo = QComboBox()
         self.borrowed_combo.addItem("All")
         self.borrowed_combo.addItem("Available")
