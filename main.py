@@ -4,11 +4,11 @@ import sys
 from flask import Flask
 from PyQt6.QtWidgets import QApplication
 
-# Import the app from To_Do.py
-from To_Do import app as flask_app
+# Import the app from flask.py
+from backend import app as flask_app
 
-# Import the GUI from too.py
-from too import MainWindow
+# Import the GUI from gui.py
+from gui import MainWindow
 
 def run_server():
     flask_app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)

@@ -61,5 +61,26 @@
         "author": "Khaled Hosseini",
         "category": "Fiction",
         "borrowed": false
+    },
+    {
+        "name": "The Alchemist",
+        "publication_date": "1988",
+        "author": "Paul Coelho",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "Kafka on the Shore",
+        "publication_date": "2002",
+        "author": "Haruki Murakami",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "The Trial",
+        "publication_date": "1925",
+        "author": "Franz Kafka",
+        "category": "Fiction",
+        "borrowed": false
     }
 ]
