@@ -241,6 +241,7 @@ def index():
             th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
             th {{ background-color: #f2f2f2; }}
             form {{ margin: 0; display: inline; }}
+            body {{ background-color: #ADD8E6; }}
         </style>
     </head>
     <body>
@@ -333,6 +334,9 @@ def edit_book(book_id):
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Edit Book</title>
+        <style>
+            body {{ background-color: #ADD8E6; }}
+        </style>
     </head>
     <body>
         <h1>Edit Book</h1>
