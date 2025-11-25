@@ -82,5 +82,12 @@
         "author": "Franz Kafka",
         "category": "Fiction",
         "borrowed": false
+    },
+    {
+        "name": "Book",
+        "publication_date": "2005",
+        "author": "Omar",
+        "category": "Non-Fiction",
+        "borrowed": false
     }
 ]
