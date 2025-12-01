@@ -26,7 +26,7 @@ if __name__ == '__main__':
     server_process.start()
 
     # Wait for 2 seconds to allow the Flask server to initialize before starting the GUI.
-    time.sleep(2)
+    time.sleep(2) 
 
     # Create the PyQt application instance
     qt_app = QApplication(sys.argv)

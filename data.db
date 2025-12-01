@@ -39,7 +39,7 @@
         "publication_date": "2016",
         "author": "Rian Holiday",
         "category": "Philosophy",
-        "borrowed": false
+        "borrowed": true
     },
     {
         "name": "Scythe",

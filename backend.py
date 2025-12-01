@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
 import json
 import os
+import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -135,19 +136,41 @@ def update_borrowed_status(book_id, borrowed_status):
 @app.route('/books/<int:book_id>/borrow', methods=['POST'])
 def borrow_book(book_id):
     """
-    Mark a book as borrowed.
+    Mark a book as borrowed. Expects optional JSON or form data with 'due_date' (dd.mm.yyyy).
+    Sets borrow_date automatically to current date.
     """
-    success, resp = update_borrowed_status(book_id, True)
-    return resp
+    books = load_books()
+    if not (0 <= book_id < len(books)):
+        return jsonify({'error': 'Book not found'}), 404
+    if books[book_id].get('borrowed', False):
+        return jsonify({'error': 'Book already borrowed'}), 400
+    books[book_id]['borrowed'] = True
+    books[book_id]['borrow_date'] = datetime.datetime.now().strftime('%d.%m.%Y')
+    data = request.get_json() if request.is_json else request.form.to_dict()
+    if data and 'due_date' in data:
+        books[book_id]['due_date'] = data['due_date']
+    save_books(books)
+    return jsonify(books[book_id])
 
 
 @app.route('/books/<int:book_id>/return', methods=['POST'])
 def return_book(book_id):
     """
     Mark a book as returned (not borrowed).
+    Clears borrow_date and due_date.
     """
-    success, resp = update_borrowed_status(book_id, False)
-    return resp
+    books = load_books()
+    if not (0 <= book_id < len(books)):
+        return jsonify({'error': 'Book not found'}), 404
+    if not books[book_id].get('borrowed', False):
+        return jsonify({'error': 'Book not borrowed'}), 400
+    books[book_id]['borrowed'] = False
+    if 'borrow_date' in books[book_id]:
+        del books[book_id]['borrow_date']
+    if 'due_date' in books[book_id]:
+        del books[book_id]['due_date']
+    save_books(books)
+    return jsonify(books[book_id])
 
 
 @app.route('/web/borrow/<int:book_id>', methods=['POST'])
@@ -183,22 +206,32 @@ def web_delete_book(book_id):
 def render_book_row(book, idx):
     """
     Helper function to generate a table row HTML string for one book in the web UI.
+    Marks row red if borrowed and due_date is past today.
     """
     status = "Borrowed" if book.get('borrowed', False) else "Available"
     actions = ""
     if not book.get('borrowed', False):
-        actions += f'<form method="post" action="/web/borrow/{idx}" style="display:inline;"><button type="submit">Borrow</button></form>'
+        actions += f'<form method="post" action="/web/borrow/{idx}" style="display:inline;"><input type="text" name="due_date" placeholder="dd.mm.yyyy" required><button type="submit">Borrow</button></form>'
     else:
         actions += f'<form method="post" action="/web/return/{idx}" style="display:inline;"><button type="submit">Return</button></form>'
     actions += f'<form method="post" action="/web/delete/{idx}" style="display:inline;"><button type="submit">Delete</button></form>'
     actions += f'<form method="get" action="/edit/{idx}" style="display:inline; margin-left: 5px;"><button type="submit">Edit</button></form>'
+
+    # Check if overdue
+    today = datetime.datetime.now().strftime('%d.%m.%Y')
+    due_date = book.get('due_date', '')
+    is_overdue = book.get('borrowed', False) and due_date and due_date < today
+    row_style = 'style="background-color: red;"' if is_overdue else ''
+
     return f"""
-    <tr>
+    <tr {row_style}>
         <td>{book.get('name','')}</td>
         <td>{book.get('author','')}</td>
         <td>{book.get('publication_date','')}</td>
         <td>{book.get('category','')}</td>
         <td>{status}</td>
+        <td>{book.get('borrow_date','')}</td>
+        <td>{book.get('due_date','')}</td>
         <td>{actions}</td>
     </tr>
     """
@@ -288,6 +321,8 @@ def index():
                     <th>Publication Date</th>
                     <th>Category</th>
                     <th>Status</th>
+                    <th>Borrow Date</th>
+                    <th>Due Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>

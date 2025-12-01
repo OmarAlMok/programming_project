@@ -55,6 +55,32 @@ class AddBookDialog(QDialog):
         self.setLayout(layout)
 
 
+class BorrowBookDialog(QDialog):
+    """
+    Dialog window to borrow a book.
+    Contains form field for the due date (dd.mm.yyyy).
+    Provides a 'Borrow' button that accepts the dialog input.
+    """
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Borrow Book")
+        layout = QFormLayout()
+
+        # Text input for due date
+        self.due_date_edit = QLineEdit()
+        self.due_date_edit.setPlaceholderText("dd.mm.yyyy")
+
+        # Add input field to the form layout with label
+        layout.addRow("Due Date:", self.due_date_edit)
+
+        # Add button to submit the form and accept the dialog
+        self.ok_btn = QPushButton("Borrow")
+        self.ok_btn.clicked.connect(self.accept)
+        layout.addRow(self.ok_btn)
+
+        self.setLayout(layout)
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -128,8 +154,11 @@ class MainWindow(QMainWindow):
         """
         Populate the QTableWidget with a list of book dictionaries.
         Clears existing rows and sets new rows for each book.
+        Marks row red if borrowed and due_date is past today.
         """
+        from datetime import datetime
         self.table_widget.setRowCount(len(books))
+        today = datetime.now().strftime('%d.%m.%Y')
         for i, book in enumerate(books):
             self.table_widget.setItem(i, 0, QTableWidgetItem(book.get('name', '')))
             self.table_widget.setItem(i, 1, QTableWidgetItem(book.get('author', '')))
@@ -137,6 +166,15 @@ class MainWindow(QMainWindow):
             self.table_widget.setItem(i, 3, QTableWidgetItem(book.get('category', '')))
             status = "Borrowed" if book.get('borrowed', False) else "Available"
             self.table_widget.setItem(i, 4, QTableWidgetItem(status))
+
+            # Check if overdue
+            due_date = book.get('due_date', '')
+            is_overdue = book.get('borrowed', False) and due_date and due_date < today
+            if is_overdue:
+                for col in range(5):
+                    item = self.table_widget.item(i, col)
+                    if item:
+                        item.setBackground(Qt.GlobalColor.red)
 
     def load_books(self):
         """
@@ -224,19 +262,27 @@ class MainWindow(QMainWindow):
 
     def borrow_book(self):
         """
-        Borrow the selected book via backend and reload table.
+        Show dialog to borrow the selected book with due date input.
+        On success, reload the book list.
         """
         current_row = self.table_widget.currentRow()
         if current_row >= 0:
             book_id = current_row
-            try:
-                response = requests.post(f"{self.base_url}/books/{book_id}/borrow")
-                if response.status_code == 200:
-                    self.load_books()
+            dialog = BorrowBookDialog()
+            if dialog.exec():
+                due_date = dialog.due_date_edit.text().strip()
+                if due_date:
+                    data = {'due_date': due_date}
+                    try:
+                        response = requests.post(f"{self.base_url}/books/{book_id}/borrow", json=data)
+                        if response.status_code == 200:
+                            self.load_books()
+                        else:
+                            QMessageBox.warning(self, "Error", response.json().get('error', 'Failed to borrow book'))
+                    except requests.exceptions.RequestException:
+                        QMessageBox.warning(self, "Error", "Cannot connect to backend.")
                 else:
-                    QMessageBox.warning(self, "Error", response.json().get('error', 'Failed to borrow book'))
-            except requests.exceptions.RequestException:
-                QMessageBox.warning(self, "Error", "Cannot connect to backend.")
+                    QMessageBox.warning(self, "Error", "Due date is required.")
 
     def return_book(self):
         """
@@ -270,6 +316,10 @@ class MainWindow(QMainWindow):
                     f"Category: {book.get('category','')}\n"
                     f"Borrowed: {book.get('borrowed', False)}"
                 )
+                if book.get('borrow_date'):
+                    msg += f"\nBorrow Date: {book.get('borrow_date')}"
+                if book.get('due_date'):
+                    msg += f"\nDue Date: {book.get('due_date')}"
                 QMessageBox.information(self, "Book Metadata", msg)
         except requests.exceptions.RequestException:
             QMessageBox.warning(self, "Error", "Cannot connect to backend.")
