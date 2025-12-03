@@ -4,7 +4,9 @@
         "publication_date": "2019",
         "author": "Alex Michaelides",
         "category": "Fiction",
-        "borrowed": false
+        "borrowed": true,
+        "borrow_date": "02.12.2025",
+        "due_date": "03.12.2025"
     },
     {
         "name": "Harry Potter and the Philosopher's stone",
@@ -18,7 +20,7 @@
         "publication_date": "1989",
         "author": "Louis Sachar",
         "category": "Fiction",
-        "borrowed": true
+        "borrowed": false
     },
     {
         "name": "The Mind Illuminated",
@@ -32,14 +34,16 @@
         "publication_date": "2015",
         "author": "Rick Riordan",
         "category": "Fiction",
-        "borrowed": true
+        "borrowed": false
     },
     {
         "name": "Ego is the Enemy",
         "publication_date": "2016",
         "author": "Rian Holiday",
         "category": "Philosophy",
-        "borrowed": true
+        "borrowed": true,
+        "borrow_date": "02.12.2025",
+        "due_date": "04.12.2025"
     },
     {
         "name": "Scythe",
@@ -88,6 +92,13 @@
         "publication_date": "2005",
         "author": "Omar",
         "category": "Non-Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "Omar",
+        "publication_date": "1999",
+        "author": "Omar",
+        "category": "Fiction",
         "borrowed": false
     }
 ]

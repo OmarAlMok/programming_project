@@ -133,24 +133,25 @@ def test_main_window_filter_books(mock_get, qapp):
     window.close()
 
 
+@patch('gui.AddBookDialog')
 @patch('requests.post')
 @patch('gui.QMessageBox.warning')
-def test_main_window_add_book(mock_warning, mock_post, qapp):
+def test_main_window_add_book(mock_warning, mock_post, mock_dialog_class, qapp):
     """Test MainWindow add_book method with mocked request."""
     mock_response = MagicMock()
     mock_response.status_code = 201
     mock_post.return_value = mock_response
 
+    mock_dialog = MagicMock()
+    mock_dialog.exec.return_value = 1
+    mock_dialog.name_edit.text.return_value = "New Book"
+    mock_dialog.date_edit.text.return_value = "01.01.2023"
+    mock_dialog.author_edit.text.return_value = "New Author"
+    mock_dialog.category_edit.text.return_value = "Fiction"
+    mock_dialog_class.return_value = mock_dialog
+
     window = MainWindow()
-    dialog = AddBookDialog()
-    dialog.name_edit.setText("New Book")
-    dialog.date_edit.setText("01.01.2023")
-    dialog.author_edit.setText("New Author")
-    dialog.category_edit.setText("Fiction")
-    window.add_btn.clicked.connect(lambda: window.add_book())
-    # Simulate dialog exec
-    with patch.object(dialog, 'exec', return_value=1):
-        window.add_book()
+    window.add_book()
     mock_post.assert_called_with("http://localhost:5000/books", json={
         'name': 'New Book',
         'publication_date': '01.01.2023',
@@ -178,23 +179,26 @@ def test_main_window_delete_book(mock_warning, mock_delete, qapp):
     window.close()
 
 
+@patch('gui.BorrowBookDialog')
 @patch('requests.post')
 @patch('gui.QMessageBox.warning')
-def test_main_window_borrow_book(mock_warning, mock_post, qapp):
+def test_main_window_borrow_book(mock_warning, mock_post, mock_dialog_class, qapp):
     """Test MainWindow borrow_book method with mocked request."""
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_post.return_value = mock_response
+
+    mock_dialog = MagicMock()
+    mock_dialog.exec.return_value = 1
+    mock_dialog.due_date_edit.text.return_value = "15.12.2023"
+    mock_dialog_class.return_value = mock_dialog
 
     window = MainWindow()
     # Set up table with a book
     books = [{"name": "Book1", "author": "Author1", "publication_date": "01.01.2020", "category": "Fiction", "borrowed": False}]
     window.populate_table(books)
     window.table_widget.setCurrentRow(0)
-    dialog = BorrowBookDialog()
-    dialog.due_date_edit.setText("15.12.2023")
-    with patch.object(dialog, 'exec', return_value=1):
-        window.borrow_book()
+    window.borrow_book()
     mock_post.assert_called_with("http://localhost:5000/books/0/borrow", json={'due_date': '15.12.2023'})
     window.close()
 

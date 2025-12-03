@@ -29,7 +29,7 @@ When you run main.py, the flask server gets activated at http://localhost:5000. 
 - Book data is saved to and loaded from the JSON database (data.db)
 
 # Structure
-- main.py: Starts the backedn and the GUI.
+- main.py: Starts the backend and the GUI.
 - gui.py: Handles the GUI.
 - backend.py: Flask server managing database operations.
 - data.db: JSON database storing all book information
