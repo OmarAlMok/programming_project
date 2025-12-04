@@ -13,7 +13,9 @@
         "publication_date": "1999",
         "author": "J.K. Rowling",
         "category": "Fiction",
-        "borrowed": false
+        "borrowed": true,
+        "borrow_date": "03.12.2025",
+        "due_date": "04.12.2005"
     },
     {
         "name": "The Boy Who Lost His Face",
@@ -98,6 +100,13 @@
         "name": "Omar",
         "publication_date": "1999",
         "author": "Omar",
+        "category": "Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "Lord of the Flies",
+        "publication_date": "1954",
+        "author": "William Golding",
         "category": "Fiction",
         "borrowed": false
     }
