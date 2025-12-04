@@ -136,7 +136,7 @@ def update_borrowed_status(book_id, borrowed_status):
 @app.route('/books/<int:book_id>/borrow', methods=['POST'])
 def borrow_book(book_id):
     """
-    Mark a book as borrowed. Expects JSON or form data with 'borrower_name' and 'due_date' (dd.mm.yyyy).
+    Mark a book as borrowed. Expects optional JSON or form data with 'due_date' (dd.mm.yyyy).
     Sets borrow_date automatically to current date.
     """
     books = load_books()
@@ -144,13 +144,11 @@ def borrow_book(book_id):
         return jsonify({'error': 'Book not found'}), 404
     if books[book_id].get('borrowed', False):
         return jsonify({'error': 'Book already borrowed'}), 400
-    data = request.get_json() if request.is_json else request.form.to_dict()
-    if not data or 'borrower_name' not in data or 'due_date' not in data:
-        return jsonify({'error': 'Borrower name and due date are required'}), 400
     books[book_id]['borrowed'] = True
     books[book_id]['borrow_date'] = datetime.datetime.now().strftime('%d.%m.%Y')
-    books[book_id]['borrower_name'] = data['borrower_name']
-    books[book_id]['due_date'] = data['due_date']
+    data = request.get_json() if request.is_json else request.form.to_dict()
+    if data and 'due_date' in data:
+        books[book_id]['due_date'] = data['due_date']
     save_books(books)
     return jsonify(books[book_id])
 

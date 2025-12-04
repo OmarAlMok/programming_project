@@ -262,7 +262,7 @@ class MainWindow(QMainWindow):
 
     def borrow_book(self):
         """
-        Show dialog to borrow the selected book with borrower's name and due date input.
+        Show dialog to borrow the selected book with due date input.
         On success, reload the book list.
         """
         current_row = self.table_widget.currentRow()
@@ -270,10 +270,9 @@ class MainWindow(QMainWindow):
             book_id = current_row
             dialog = BorrowBookDialog()
             if dialog.exec():
-                borrower_name = dialog.borrower_name_edit.text().strip()
                 due_date = dialog.due_date_edit.text().strip()
-                if borrower_name and due_date:
-                    data = {'borrower_name': borrower_name, 'due_date': due_date}
+                if due_date:
+                    data = {'due_date': due_date}
                     try:
                         response = requests.post(f"{self.base_url}/books/{book_id}/borrow", json=data)
                         if response.status_code == 200:
@@ -283,7 +282,7 @@ class MainWindow(QMainWindow):
                     except requests.exceptions.RequestException:
                         QMessageBox.warning(self, "Error", "Cannot connect to backend.")
                 else:
-                    QMessageBox.warning(self, "Error", "Borrower's name and due date are required.")
+                    QMessageBox.warning(self, "Error", "Due date is required.")
 
     def return_book(self):
         """
@@ -321,8 +320,6 @@ class MainWindow(QMainWindow):
                     msg += f"\nBorrow Date: {book.get('borrow_date')}"
                 if book.get('due_date'):
                     msg += f"\nDue Date: {book.get('due_date')}"
-                if book.get('borrower_name'):
-                    msg += f"\nBorrower Name: {book.get('borrower_name')}"
                 QMessageBox.information(self, "Book Metadata", msg)
         except requests.exceptions.RequestException:
             QMessageBox.warning(self, "Error", "Cannot connect to backend.")
