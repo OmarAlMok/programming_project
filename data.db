@@ -4,18 +4,14 @@
         "publication_date": "2019",
         "author": "Alex Michaelides",
         "category": "Fiction",
-        "borrowed": true,
-        "borrow_date": "02.12.2025",
-        "due_date": "03.12.2025"
+        "borrowed": false
     },
     {
         "name": "Harry Potter and the Philosopher's stone",
         "publication_date": "1999",
         "author": "J.K. Rowling",
         "category": "Fiction",
-        "borrowed": true,
-        "borrow_date": "03.12.2025",
-        "due_date": "04.12.2005"
+        "borrowed": false
     },
     {
         "name": "The Boy Who Lost His Face",
