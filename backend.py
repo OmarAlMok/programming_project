@@ -136,7 +136,7 @@ def update_borrowed_status(book_id, borrowed_status):
 @app.route('/books/<int:book_id>/borrow', methods=['POST'])
 def borrow_book(book_id):
     """
-    Mark a book as borrowed. Expects optional JSON or form data with 'due_date' (dd.mm.yyyy).
+    Mark a book as borrowed. Expects optional JSON or form data with 'due_date' (dd.mm.yyyy) and 'borrower_name'.
     Sets borrow_date automatically to current date.
     """
     books = load_books()
@@ -149,6 +149,8 @@ def borrow_book(book_id):
     data = request.get_json() if request.is_json else request.form.to_dict()
     if data and 'due_date' in data:
         books[book_id]['due_date'] = data['due_date']
+    if data and 'borrower_name' in data:
+        books[book_id]['borrower_name'] = data['borrower_name']
     save_books(books)
     return jsonify(books[book_id])
 
@@ -157,7 +159,7 @@ def borrow_book(book_id):
 def return_book(book_id):
     """
     Mark a book as returned (not borrowed).
-    Clears borrow_date and due_date.
+    Clears borrow_date, due_date, and borrower_name.
     """
     books = load_books()
     if not (0 <= book_id < len(books)):
@@ -169,6 +171,8 @@ def return_book(book_id):
         del books[book_id]['borrow_date']
     if 'due_date' in books[book_id]:
         del books[book_id]['due_date']
+    if 'borrower_name' in books[book_id]:
+        del books[book_id]['borrower_name']
     save_books(books)
     return jsonify(books[book_id])
 
@@ -211,7 +215,7 @@ def render_book_row(book, idx):
     status = "Borrowed" if book.get('borrowed', False) else "Available"
     actions = ""
     if not book.get('borrowed', False):
-        actions += f'<form method="post" action="/web/borrow/{idx}" style="display:inline;"><input type="text" name="due_date" placeholder="dd.mm.yyyy" required><button type="submit">Borrow</button></form>'
+        actions += f'<form method="post" action="/web/borrow/{idx}" style="display:inline;"><input type="text" name="borrower_name" placeholder="Borrower Name" required><input type="text" name="due_date" placeholder="dd.mm.yyyy" required><button type="submit">Borrow</button></form>'
     else:
         actions += f'<form method="post" action="/web/return/{idx}" style="display:inline;"><button type="submit">Return</button></form>'
     actions += f'<form method="post" action="/web/delete/{idx}" style="display:inline;"><button type="submit">Delete</button></form>'
@@ -232,6 +236,7 @@ def render_book_row(book, idx):
         <td>{status}</td>
         <td>{book.get('borrow_date','')}</td>
         <td>{book.get('due_date','')}</td>
+        <td>{book.get('borrower_name','')}</td>
         <td>{actions}</td>
     </tr>
     """
@@ -323,6 +328,7 @@ def index():
                     <th>Status</th>
                     <th>Borrow Date</th>
                     <th>Due Date</th>
+                    <th>Borrower's Name</th>
                     <th>Actions</th>
                 </tr>
             </thead>

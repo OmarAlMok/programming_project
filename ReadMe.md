@@ -9,7 +9,7 @@
 # The program lets you:
 1. Add books
 2. Delete books
-3. Borrow and return books
+3. Borrow and return books with a due date and a borrower's name
 4. Filter and search books
 5. View a book's metadata by double-clicking
 

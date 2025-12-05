@@ -4,14 +4,20 @@
         "publication_date": "2019",
         "author": "Alex Michaelides",
         "category": "Fiction",
-        "borrowed": false
+        "borrowed": true,
+        "borrow_date": "05.12.2025",
+        "due_date": "07.12.2025",
+        "borrower_name": "John Lark"
     },
     {
         "name": "Harry Potter and the Philosopher's stone",
         "publication_date": "1999",
         "author": "J.K. Rowling",
         "category": "Fiction",
-        "borrowed": false
+        "borrowed": true,
+        "borrow_date": "05.12.2025",
+        "due_date": "07.12.2025",
+        "borrower_name": "Omar"
     },
     {
         "name": "The Boy Who Lost His Face",
@@ -39,9 +45,7 @@
         "publication_date": "2016",
         "author": "Rian Holiday",
         "category": "Philosophy",
-        "borrowed": true,
-        "borrow_date": "02.12.2025",
-        "due_date": "04.12.2025"
+        "borrowed": false
     },
     {
         "name": "Scythe",

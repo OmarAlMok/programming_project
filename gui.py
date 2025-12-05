@@ -58,7 +58,7 @@ class AddBookDialog(QDialog):
 class BorrowBookDialog(QDialog):
     """
     Dialog window to borrow a book.
-    Contains form field for the due date (dd.mm.yyyy).
+    Contains form fields for the borrower name and due date (dd.mm.yyyy).
     Provides a 'Borrow' button that accepts the dialog input.
     """
     def __init__(self):
@@ -66,11 +66,16 @@ class BorrowBookDialog(QDialog):
         self.setWindowTitle("Borrow Book")
         layout = QFormLayout()
 
+        # Text input for borrower name
+        self.borrower_name_edit = QLineEdit()
+        self.borrower_name_edit.setPlaceholderText("Borrower Name")
+
         # Text input for due date
         self.due_date_edit = QLineEdit()
         self.due_date_edit.setPlaceholderText("dd.mm.yyyy")
 
-        # Add input field to the form layout with label
+        # Add input fields to the form layout with labels
+        layout.addRow("Borrower Name:", self.borrower_name_edit)
         layout.addRow("Due Date:", self.due_date_edit)
 
         # Add button to submit the form and accept the dialog
@@ -117,8 +122,8 @@ class MainWindow(QMainWindow):
 
         # Table widget for displaying books
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(5)
-        self.table_widget.setHorizontalHeaderLabels(["Name", "Author", "Publication Date", "Category", "Status"])
+        self.table_widget.setColumnCount(6)
+        self.table_widget.setHorizontalHeaderLabels(["Name", "Author", "Publication Date", "Category", "Status", "Borrower's Name"])
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
         # Buttons panel
@@ -166,12 +171,13 @@ class MainWindow(QMainWindow):
             self.table_widget.setItem(i, 3, QTableWidgetItem(book.get('category', '')))
             status = "Borrowed" if book.get('borrowed', False) else "Available"
             self.table_widget.setItem(i, 4, QTableWidgetItem(status))
+            self.table_widget.setItem(i, 5, QTableWidgetItem(book.get('borrower_name', '')))
 
             # Check if overdue
             due_date = book.get('due_date', '')
             is_overdue = book.get('borrowed', False) and due_date and due_date < today
             if is_overdue:
-                for col in range(5):
+                for col in range(6):
                     item = self.table_widget.item(i, col)
                     if item:
                         item.setBackground(Qt.GlobalColor.red)
@@ -262,7 +268,7 @@ class MainWindow(QMainWindow):
 
     def borrow_book(self):
         """
-        Show dialog to borrow the selected book with due date input.
+        Show dialog to borrow the selected book with borrower name and due date input.
         On success, reload the book list.
         """
         current_row = self.table_widget.currentRow()
@@ -270,9 +276,10 @@ class MainWindow(QMainWindow):
             book_id = current_row
             dialog = BorrowBookDialog()
             if dialog.exec():
+                borrower_name = dialog.borrower_name_edit.text().strip()
                 due_date = dialog.due_date_edit.text().strip()
-                if due_date:
-                    data = {'due_date': due_date}
+                if borrower_name and due_date:
+                    data = {'borrower_name': borrower_name, 'due_date': due_date}
                     try:
                         response = requests.post(f"{self.base_url}/books/{book_id}/borrow", json=data)
                         if response.status_code == 200:
@@ -282,7 +289,7 @@ class MainWindow(QMainWindow):
                     except requests.exceptions.RequestException:
                         QMessageBox.warning(self, "Error", "Cannot connect to backend.")
                 else:
-                    QMessageBox.warning(self, "Error", "Due date is required.")
+                    QMessageBox.warning(self, "Error", "Borrower name and due date are required.")
 
     def return_book(self):
         """
@@ -316,6 +323,8 @@ class MainWindow(QMainWindow):
                     f"Category: {book.get('category','')}\n"
                     f"Borrowed: {book.get('borrowed', False)}"
                 )
+                if book.get('borrower_name'):
+                    msg += f"\nBorrower's Name: {book.get('borrower_name')}"
                 if book.get('borrow_date'):
                     msg += f"\nBorrow Date: {book.get('borrow_date')}"
                 if book.get('due_date'):
