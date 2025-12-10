@@ -31,10 +31,7 @@
         "publication_date": "2015",
         "author": "Culadasa",
         "category": "Science",
-        "borrowed": true,
-        "borrow_date": "06.12.2025",
-        "due_date": "07.12.2025",
-        "borrower_name": "Omar"
+        "borrowed": false
     },
     {
         "name": "Magnus Chase and the Sword of Summer",
@@ -97,6 +94,13 @@
         "publication_date": "2005",
         "author": "Omar",
         "category": "Non-Fiction",
+        "borrowed": false
+    },
+    {
+        "name": "Omar",
+        "publication_date": "1999",
+        "author": "Omar",
+        "category": "Fiction",
         "borrowed": false
     },
     {
